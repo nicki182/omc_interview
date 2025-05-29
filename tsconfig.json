@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "checkJs": true,
+    "noEmit": false,
+    "declarationMap": true,
+    "strictNullChecks": true,
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "strictFunctionTypes": false,
+    "target": "ESNext",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "outDir": "./dist",
+    "moduleResolution": "node",
+    "resolveJsonModule": true
+  },
+  "include": ["**/*.ts", "**/*.d.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".nyc_output",
+    "husky",
+    "test",
+    "coverage"
+  ]
+}
