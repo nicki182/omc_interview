@@ -30,3 +30,7 @@ export interface CRUDService<T, A> {
   delete(id: number): Promise<void>;
   list(): Promise<T[]>;
 }
+// DTOGeneric interface for converting data from one type to another, T is the source type and A is the target class which is the class itself.
+export interface DTOGeneric<T, A> {
+  from(data: T): A;
+}

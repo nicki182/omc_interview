@@ -42,6 +42,23 @@ model Sensor {
   @@map("sensors")
 }
 
+model AggregatedTemperature {
+  id        Int      @id @default(autoincrement())
+  face      Face
+  timestamp Int
+  temperature_value Float
+  time      Time   @default(HOUR)        
+  @@map("aggregated_temperatures")
+}
+
+enum Time {
+  HOUR
+  DAY
+  WEEK
+  MONTH
+  YEAR
+}
+
 enum Face {
   SOUTH
   EAST

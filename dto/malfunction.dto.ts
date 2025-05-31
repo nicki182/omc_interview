@@ -34,7 +34,7 @@ export class MalfunctionDTO {
     const dto = new MalfunctionDTO();
     dto.id = malfunction.id;
     dto.sensor_id = malfunction.sensor_id || malfunction.sensor?.id || 0; // Ensure sensor_id is defined
-    dto.timestamp = malfunction.timestamp;
+    dto.timestamp = malfunction.timestamp || Date.now(); // Default to current timestamp if not provided
     dto.temperature_value = malfunction.temperature_value;
     dto.deviation = malfunction.deviation;
     dto.sensor = malfunction.sensor || ({} as MalfunctionWithSensor["sensor"]); // Ensure sensor is defined

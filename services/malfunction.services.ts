@@ -1,4 +1,4 @@
-import { MalfunctionDTO } from "@dto/malfunction.dto";
+import { MalfunctionDTO } from "@dto/index";
 import PrismaClient, { Malfunction } from "@prisma_client";
 import redis from "@redis";
 import { CRUDService, MalfunctionWithSensor } from "@types";

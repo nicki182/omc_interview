@@ -34,7 +34,7 @@ export class SensorDTO {
   public static from(sensor: SensorWithTemperaturesAndMalfunctions): SensorDTO {
     const dto = new SensorDTO();
     dto.id = sensor.id;
-    dto.createdAt = sensor.createdAt;
+    dto.createdAt = sensor.createdAt || new Date(); // Default to current date if not provided
     dto.face = sensor.face;
     dto.temperatures = sensor.temperatures || [];
     dto.malfunctions = sensor.malfunctions || [];

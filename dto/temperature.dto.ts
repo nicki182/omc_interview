@@ -25,9 +25,18 @@ export class TemperatureDTO {
     return this.sensor_id;
   }
 
+  public aggregateTemperatureFromTemperatures(
+    temperatures: TemperatureDTO[],
+  ): number {
+    return (
+      temperatures.reduce((sum, temp) => sum + temp.getTemperatureValue(), 0) /
+      temperatures.length
+    ); // Calculate average
+  }
+
   public static from(temperature: TemperatureWithSensor): TemperatureDTO {
     const dto = new TemperatureDTO();
-    dto.timestamp = temperature.timestamp;
+    dto.timestamp = temperature.timestamp || Date.now(); // Default to current timestamp if not provided
     dto.id = temperature.id;
     dto.temperature_value = temperature.temperature_value;
     dto.sensor = temperature.sensor || ({} as Sensor); // Ensure sensor is defined

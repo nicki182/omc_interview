@@ -1,4 +1,4 @@
-import { TemperatureDTO } from "@dto/temperature.dto";
+import { TemperatureDTO } from "@dto/index";
 import PrismaClient, { Temperature } from "@prisma_client";
 import redis from "@redis";
 import { CRUDService, TemperatureWithSensor } from "@types";
@@ -7,7 +7,10 @@ class TemperatureServices
 {
   private prisma = PrismaClient;
   private redis = redis.getClient();
-  private cacheKey = "temperature _";
+  private cacheKey = "temperature";
+  private createCacheKey(temperature: TemperatureWithSensor): string {
+    return `${this.cacheKey}_${new Date(temperature.timestamp).getHours()}`;
+  }
   public async create(data: Temperature): Promise<TemperatureDTO> {
     const temperature = await this.prisma.temperature.create({
       data: {
@@ -15,12 +18,13 @@ class TemperatureServices
         sensor_id: data.sensor_id,
         temperature_value: data.temperature_value,
       },
+      include: {
+        sensor: true, // Include sensor details
+      },
     });
-    // Cache the created temperature
-    await this.redis.set(
-      `${this.cacheKey}${temperature.id}`,
-      JSON.stringify(temperature),
-    );
+    const cacheKey = this.createCacheKey(temperature);
+    await this.redis.LPUSH(cacheKey, JSON.stringify(temperature));
+    await this.redis.expire(cacheKey, 7200); // 2 hour TTL
     return TemperatureDTO.from(temperature);
   }
   public async list(): Promise<TemperatureDTO[]> {
@@ -32,19 +36,11 @@ class TemperatureServices
     return temperatures.map(TemperatureDTO.from);
   }
   public async read(id: number): Promise<TemperatureDTO | null> {
-    const cachedTemperature = await this.redis.get(`${this.cacheKey}${id}`);
-    if (cachedTemperature) {
-      return TemperatureDTO.from(JSON.parse(cachedTemperature));
-    }
     const temperature = await this.prisma.temperature.findUnique({
       where: { id },
       include: { sensor: true },
     });
     if (temperature) {
-      await this.redis.set(
-        `${this.cacheKey}${id}`,
-        JSON.stringify(temperature),
-      );
       return TemperatureDTO.from(temperature);
     }
     return null;
@@ -61,17 +57,41 @@ class TemperatureServices
         temperature_value: data.temperature_value,
       },
     });
-    // Update the cache
-    await this.redis.set(`${this.cacheKey}${id}`, JSON.stringify(temperature));
     return TemperatureDTO.from(temperature);
   }
 
   public async delete(id: number): Promise<void> {
-    await this.prisma.temperature.delete({
+    const temperature = await this.prisma.temperature.delete({
       where: { id },
     });
     // Remove from cache
-    await this.redis.del(`${this.cacheKey}${id}`);
+    await this.redis.del(
+      `${this.cacheKey}_${new Date(temperature.timestamp).getHours()}`,
+    );
+  }
+  public async getTemperaturesOfHour(): Promise<TemperatureDTO[]> {
+    const cacheKey = `${this.cacheKey}_${new Date().getHours()}`;
+    const cachedTemperatures = await this.redis.LRANGE(cacheKey, 0, -1);
+    if (cachedTemperatures.length > 0) {
+      return cachedTemperatures.map((temp) =>
+        TemperatureDTO.from(JSON.parse(temp)),
+      );
+    }
+    const temperatures = await this.prisma.temperature.findMany({
+      where: {
+        timestamp: {
+          gte: new Date().getHours() * 3600 * 1000, // Start of the hour
+          lt: new Date().getHours() * 3600 * 1000 + 3600 * 1000, // End of the hour
+        },
+      },
+      include: { sensor: true },
+    });
+    await this.redis.LPUSH(
+      cacheKey,
+      temperatures.map((temp) => JSON.stringify(temp)),
+    );
+    await this.redis.expire(cacheKey, 7200); // 2 hour TTL
+    return temperatures.map(TemperatureDTO.from);
   }
 }
 export const temperatureServices = new TemperatureServices();

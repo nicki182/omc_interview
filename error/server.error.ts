@@ -1,4 +1,4 @@
-import CustomError from ".";
+import { CustomError } from ".";
 
 export enum ErrorCodes {
   BadRequest = 400,
