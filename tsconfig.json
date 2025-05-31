@@ -14,15 +14,23 @@
     "esModuleInterop": true,
     "outDir": "./dist",
     "moduleResolution": "node",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@utils/*": ["./utils/*"],
+      "@services/*": ["./services/*"],
+      "@redis": ["./db/redis"],
+      "@prisma_client": ["./db/prisma"],
+      "@routes": ["./routes"],
+      "@types": ["./types"],
+      "@dto/*": ["./dto/*"], 
+      "@error/*": ["./error/*"]
+    }
+  },
+  "ts-node": {
+    "esm": true,
+    "transpileOnly": true
   },
   "include": ["**/*.ts", "**/*.d.ts"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    ".nyc_output",
-    "husky",
-    "test",
-    "coverage"
-  ]
+  "exclude": ["node_modules", "dist", "husky", "test"]
 }

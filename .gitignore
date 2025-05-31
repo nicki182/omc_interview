@@ -136,3 +136,6 @@ dist
 .pnp.*
 
 .history
+
+/generated/prisma
+.log

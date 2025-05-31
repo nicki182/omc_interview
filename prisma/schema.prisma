@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Temperature {
+  id        Int      @id @default(autoincrement())
+  timestamp Int      @unique
+  sensor_id Int
+  sensor    Sensor @relation(fields: [sensor_id], references: [id])   
+  temperature_value Float
+  @@map("temperatures")
+}
+
+model Malfunction {
+  id        Int      @id @default(autoincrement())
+  timestamp Int      @unique
+  sensor_id Int
+  temperature_value Float
+  deviation Float
+  sensor    Sensor @relation(fields: [sensor_id], references: [id])   
+  @@map("malfunctions")
+}
+model Sensor {
+  id        Int          @id @default(autoincrement())
+  face      Face         @default(SOUTH)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  temperatures Temperature[]
+  malfunctions Malfunction[]
+  @@map("sensors")
+}
+
+enum Face {
+  SOUTH
+  EAST
+  NORTH
+  WEST
+}
