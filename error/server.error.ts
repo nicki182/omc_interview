@@ -19,10 +19,11 @@ class ServerError extends CustomError {
   public label: string;
 
   constructor(code?: ErrorCodes, message?: string) {
-    if ((code && !Object.values(ErrorCodes).includes(code))  || message) {
+    if ((code && !Object.values(ErrorCodes).includes(code)) || message) {
       throw new CustomError("Invalid error code provided");
     }
-    const errorMessage = errorsCodesLabel[code as ErrorCodes] || "Unknown Error";
+    const errorMessage =
+      errorsCodesLabel[code as ErrorCodes] || "Unknown Error";
     super(message || errorMessage);
   }
 }

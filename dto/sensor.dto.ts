@@ -24,12 +24,12 @@ export class SensorDTO {
   public setFace(face: Face): void {
     this.face = face;
   }
-    public getTemperatures(): SensorWithTemperaturesAndMalfunctions["temperatures"] {
-        return this.temperatures;
-    }
-    public getMalfunctions(): SensorWithTemperaturesAndMalfunctions["malfunctions"] {
-        return this.malfunctions;
-    }
+  public getTemperatures(): SensorWithTemperaturesAndMalfunctions["temperatures"] {
+    return this.temperatures;
+  }
+  public getMalfunctions(): SensorWithTemperaturesAndMalfunctions["malfunctions"] {
+    return this.malfunctions;
+  }
 
   public static from(sensor: SensorWithTemperaturesAndMalfunctions): SensorDTO {
     const dto = new SensorDTO();

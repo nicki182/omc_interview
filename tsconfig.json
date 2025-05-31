@@ -23,7 +23,7 @@
       "@prisma_client": ["./db/prisma"],
       "@routes": ["./routes"],
       "@types": ["./types"],
-      "@dto/*": ["./dto/*"], 
+      "@dto/*": ["./dto/*"],
       "@error/*": ["./error/*"]
     }
   },
