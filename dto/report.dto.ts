@@ -10,9 +10,9 @@ export class ReportDTO {
 
   public getDescription(): string {
     return this.description;
-  }                                                                                                         
+  }
 
-  public getData(): ReportData {                                                                                                                                                                                    
+  public getData(): ReportData {
     return this.data;
   }
 

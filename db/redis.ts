@@ -1,4 +1,4 @@
-import {CustomError} from "@error/index";
+import { CustomError } from "@error/index";
 import { createClient, RedisClientType } from "redis";
 class RedisClient {
   private client!: RedisClientType;
