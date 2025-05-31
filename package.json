@@ -13,7 +13,6 @@
     "prettier": "prettier --write */**/*.{js,jsx,json,ts,tsx,scss,css,md}",
     "format": "pnpm prettier",
     "compile": "tsc --pretty ",
-    "lint-staged": "pnpm prettier:fix && pnpm lint:fix",
     "build": "pnpm clean && pnpm compile",
     "clean": "rimraf ./dist",
     "bs:production": "pnpm build && pnpm start",
