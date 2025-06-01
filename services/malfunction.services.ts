@@ -12,9 +12,12 @@ class MalfunctionServices
   implements CRUDService<MalfunctionDTO, MalfunctionWithSensor>
 {
   private prisma = PrismaClient;
-  private redis = redis.getClient();
+  private redis = redis;
   private cacheKey = "malfunction _";
   private deviation = 20; // Default deviation threshold
+  private getRedisClient() {
+    return this.redis.getClient();
+  }
   public async create(data: NewMalfunction): Promise<MalfunctionDTO> {
     const malfunction = await this.prisma.malfunction.create({
       data: {
@@ -25,7 +28,7 @@ class MalfunctionServices
       },
     });
     // Cache the created malfunction
-    await this.redis.set(
+    await this.getRedisClient().set(
       `${this.cacheKey}${malfunction.id}`,
       JSON.stringify(malfunction),
     );
@@ -40,7 +43,9 @@ class MalfunctionServices
     return malfunctions.map(MalfunctionDTO.from);
   }
   public async read(id: number): Promise<MalfunctionDTO | null> {
-    const cachedMalfunction = await this.redis.get(`${this.cacheKey}${id}`);
+    const cachedMalfunction = await this.getRedisClient().get(
+      `${this.cacheKey}${id}`,
+    );
     if (cachedMalfunction) {
       return MalfunctionDTO.from(JSON.parse(cachedMalfunction));
     }
@@ -49,7 +54,7 @@ class MalfunctionServices
       include: { sensor: true }, // Include sensor details if needed
     });
     if (malfunction) {
-      await this.redis.set(
+      await this.getRedisClient().set(
         `${this.cacheKey}${id}`,
         JSON.stringify(malfunction),
       );
@@ -72,7 +77,10 @@ class MalfunctionServices
       },
     });
     // Update the cache
-    await this.redis.set(`${this.cacheKey}${id}`, JSON.stringify(malfunction));
+    await this.getRedisClient().set(
+      `${this.cacheKey}${id}`,
+      JSON.stringify(malfunction),
+    );
     logger.info(`Malfunction with ID: ${id} updated`);
     return MalfunctionDTO.from(malfunction);
   }
@@ -82,7 +90,7 @@ class MalfunctionServices
       where: { id },
     });
     // Remove from cache
-    await this.redis.del(`${this.cacheKey}${id}`);
+    await this.getRedisClient().del(`${this.cacheKey}${id}`);
     logger.info(`Malfunction with ID: ${id} deleted`);
   }
   public isDeviationExceeded(

@@ -11,8 +11,11 @@ class TemperatureServices
   implements CRUDService<TemperatureDTO, TemperatureWithSensor>
 {
   private prisma = PrismaClient;
-  private redis = redis.getClient();
+  private redis = redis;
   private cacheKey = "temperature";
+  private getRedisClient() {
+    return this.redis.getClient();
+  }
   private createCacheKey(temperature: Temperature): string {
     return `${this.cacheKey}_${new Date(temperature.timestamp).getHours()}`;
   }
@@ -28,8 +31,8 @@ class TemperatureServices
       },
     });
     const cacheKey = this.createCacheKey(temperature);
-    await this.redis.LPUSH(cacheKey, JSON.stringify(temperature));
-    await this.redis.expire(cacheKey, 7200); // 2 hour TTL
+    await this.getRedisClient().LPUSH(cacheKey, JSON.stringify(temperature));
+    await this.getRedisClient().expire(cacheKey, 7200); // 2 hour TTL
     return TemperatureDTO.from(temperature);
   }
   public async list(): Promise<TemperatureDTO[]> {
@@ -79,13 +82,17 @@ class TemperatureServices
       where: { id },
     });
     // Remove from cache
-    await this.redis.del(
+    await this.getRedisClient().del(
       `${this.cacheKey}_${new Date(temperature.timestamp).getHours()}`,
     );
   }
   public async getTemperaturesOfHour(): Promise<TemperatureDTO[]> {
     const cacheKey = `${this.cacheKey}_${new Date().getHours()}`;
-    const cachedTemperatures = await this.redis.LRANGE(cacheKey, 0, -1);
+    const cachedTemperatures = await this.getRedisClient().LRANGE(
+      cacheKey,
+      0,
+      -1,
+    );
     if (cachedTemperatures.length > 0) {
       return cachedTemperatures.map((temp) =>
         TemperatureDTO.from(JSON.parse(temp)),
@@ -100,18 +107,16 @@ class TemperatureServices
       },
       include: { sensor: true },
     });
-    await this.redis.LPUSH(
+    await this.getRedisClient().LPUSH(
       cacheKey,
       temperatures.map((temp) => JSON.stringify(temp)),
     );
-    await this.redis.expire(cacheKey, 7200); // 2 hour TTL
+    await this.getRedisClient().expire(cacheKey, 7200); // 2 hour TTL
     return temperatures.map(TemperatureDTO.from);
   }
   public async clearHourlyTemperaturesCache(): Promise<void> {
     const cacheKey = `${this.cacheKey}_${new Date().getHours()}`;
-    await this.redis.del(cacheKey);
+    await this.getRedisClient().del(cacheKey);
   }
-
-  public async checkMalfunction(): Promise<void> {}
 }
 export const temperatureServices = new TemperatureServices();

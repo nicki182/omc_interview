@@ -11,15 +11,18 @@ class AggregatedTemperatureServices
   implements CRUDService<AggregatedTemperatureDTO, AggregatedTemperature>
 {
   private prisma = PrismaClient;
-  private redis = redis.getClient();
+  private redis = redis;
   private cacheKey = "aggregated_temperature _";
+  private getRedisClient() {
+    return this.redis.getClient();
+  }
   public async create(
     data: NewAggregatedTemperature,
   ): Promise<AggregatedTemperatureDTO> {
     const aggregatedTemperature =
       await this.prisma.aggregatedTemperature.create({ data });
     // Cache the created aggregatedTemperature
-    await this.redis.set(
+    await this.getRedisClient().set(
       `${this.cacheKey}${aggregatedTemperature.id}`,
       JSON.stringify(aggregatedTemperature),
     );
@@ -53,7 +56,7 @@ class AggregatedTemperatureServices
     return aggregatedTemperatures.map(AggregatedTemperatureDTO.from);
   }
   public async read(id: number): Promise<AggregatedTemperatureDTO | null> {
-    const cachedAggregatedTemperature = await this.redis.get(
+    const cachedAggregatedTemperature = await this.getRedisClient().get(
       `${this.cacheKey}${id}`,
     );
     if (cachedAggregatedTemperature) {
@@ -66,7 +69,7 @@ class AggregatedTemperatureServices
         where: { id },
       });
     if (aggregatedTemperature) {
-      await this.redis.set(
+      await this.getRedisClient().set(
         `${this.cacheKey}${id}`,
         JSON.stringify(aggregatedTemperature),
       );
@@ -87,7 +90,7 @@ class AggregatedTemperatureServices
         data,
       });
     // Update the cache
-    await this.redis.set(
+    await this.getRedisClient().set(
       `${this.cacheKey}${id}`,
       JSON.stringify(aggregatedTemperature),
     );
@@ -100,7 +103,7 @@ class AggregatedTemperatureServices
       where: { id },
     });
     // Remove from cache
-    await this.redis.del(`${this.cacheKey}${id}`);
+    await this.getRedisClient().del(`${this.cacheKey}${id}`);
     logger.info(`AggregatedTemperature with ID: ${id} deleted`);
   }
 }
