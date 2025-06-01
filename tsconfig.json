@@ -22,9 +22,10 @@
       "@redis": ["./db/redis"],
       "@prisma_client": ["./db/prisma"],
       "@routes": ["./routes"],
-      "@types": ["./types"],
+      "@types": ["./types/index.ts"],
       "@dto/*": ["./dto/*"],
-      "@error/*": ["./error/*"]
+      "@error/*": ["./error/*"],
+      "@mappers/*": ["./mappers/*"],
     }
   },
   "ts-node": {

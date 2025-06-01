@@ -1,7 +1,5 @@
-import { CustomError } from "@error/index";
 import { AggregatedTemperature, Face, Time } from "@prisma_client";
 
-import { TemperatureDTO } from "./temperature.dto";
 export class AggregatedTemperatureDTO {
   private id: number;
   private face: Face;
@@ -27,19 +25,19 @@ export class AggregatedTemperatureDTO {
   public setId(id: number): void {
     this.id = id;
   }
-  public aggregateTemperatureFromTemperatures(
-    temperatures: TemperatureDTO[],
-  ): void {
-    if (temperatures.length === 0) {
-      throw new CustomError(
-        "Cannot aggregate from an empty array of temperatures.",
-      );
-    }
-    this.temperature_value =
-      temperatures.reduce((sum, temp) => sum + temp.getTemperatureValue(), 0) /
-      temperatures.length; // Calculate average
-    this.timestamp = Date.now(); // Set current timestamp for aggregation
+  public setFace(face: Face): void {
+    this.face = face;
   }
+  public setTime(time: Time): void {
+    this.time = time;
+  }
+  public setTemperatureValue(value: number): void {
+    this.temperature_value = value;
+  }
+  public setTimestamp(timestamp: number): void {
+    this.timestamp = timestamp;
+  }
+
   public static from(
     aggregatedTemperature: AggregatedTemperature,
   ): AggregatedTemperatureDTO {

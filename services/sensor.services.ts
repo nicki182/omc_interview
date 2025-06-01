@@ -1,14 +1,18 @@
 import { SensorDTO } from "@dto/index";
 import PrismaClient, { Sensor } from "@prisma_client";
 import redis from "@redis";
-import { CRUDService, SensorWithTemperaturesAndMalfunctions } from "@types";
+import {
+  CRUDService,
+  SensorWithTemperaturesAndMalfunctions,
+  NewSensor,
+} from "@types";
 class SensorServices
   implements CRUDService<SensorDTO, SensorWithTemperaturesAndMalfunctions>
 {
   private prisma = PrismaClient;
   private redis = redis.getClient();
   private cacheKey = "sensor _";
-  public async create(data: Sensor): Promise<SensorDTO> {
+  public async create(data: NewSensor): Promise<SensorDTO> {
     const sensor = await this.prisma.sensor.create({
       data: {
         face: data.face,

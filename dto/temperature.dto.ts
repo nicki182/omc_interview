@@ -1,8 +1,8 @@
-import { Sensor } from "@prisma_client";
+import { SensorDTO } from "@dto/sensor.dto";
 import { TemperatureWithSensor } from "@types";
 export class TemperatureDTO {
   private timestamp: number;
-  private sensor: Sensor;
+  private sensor: SensorDTO;
   private id: number;
   private temperature_value: number;
   private sensor_id: number;
@@ -10,7 +10,7 @@ export class TemperatureDTO {
     return this.timestamp;
   }
 
-  public getSensor(): Sensor {
+  public getSensor(): SensorDTO {
     return this.sensor;
   }
 
@@ -25,21 +25,14 @@ export class TemperatureDTO {
     return this.sensor_id;
   }
 
-  public aggregateTemperatureFromTemperatures(
-    temperatures: TemperatureDTO[],
-  ): number {
-    return (
-      temperatures.reduce((sum, temp) => sum + temp.getTemperatureValue(), 0) /
-      temperatures.length
-    ); // Calculate average
-  }
-
   public static from(temperature: TemperatureWithSensor): TemperatureDTO {
     const dto = new TemperatureDTO();
     dto.timestamp = temperature.timestamp || Date.now(); // Default to current timestamp if not provided
     dto.id = temperature.id;
     dto.temperature_value = temperature.temperature_value;
-    dto.sensor = temperature.sensor || ({} as Sensor); // Ensure sensor is defined
+    dto.sensor = temperature.sensor
+      ? SensorDTO.from(temperature.sensor)
+      : new SensorDTO(); // Ensure sensor is defined
     dto.sensor_id = temperature.sensor?.id || temperature.sensor_id || 0; // Use optional chaining to safely access sensor id
     return dto;
   }

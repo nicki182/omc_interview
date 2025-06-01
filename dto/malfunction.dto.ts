@@ -1,11 +1,13 @@
 import { MalfunctionWithSensor } from "@types";
+
+import { SensorDTO } from "./sensor.dto";
 export class MalfunctionDTO {
   private id: number;
   private sensor_id: number;
   private timestamp: number;
   private temperature_value: number;
   private deviation: number;
-  private sensor: MalfunctionWithSensor["sensor"];
+  private sensor: SensorDTO;
 
   public getId(): number {
     return this.id;
@@ -26,7 +28,7 @@ export class MalfunctionDTO {
     return this.deviation;
   }
 
-  public getSensor(): MalfunctionWithSensor["sensor"] {
+  public getSensor(): SensorDTO {
     return this.sensor;
   }
 
@@ -37,7 +39,9 @@ export class MalfunctionDTO {
     dto.timestamp = malfunction.timestamp || Date.now(); // Default to current timestamp if not provided
     dto.temperature_value = malfunction.temperature_value;
     dto.deviation = malfunction.deviation;
-    dto.sensor = malfunction.sensor || ({} as MalfunctionWithSensor["sensor"]); // Ensure sensor is defined
+    dto.sensor = malfunction.sensor
+      ? SensorDTO.from(malfunction.sensor)
+      : new SensorDTO(); // Ensure sensor is defined
     return dto;
   }
 }

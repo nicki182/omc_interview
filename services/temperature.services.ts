@@ -1,17 +1,17 @@
 import { TemperatureDTO } from "@dto/index";
 import PrismaClient, { Temperature } from "@prisma_client";
 import redis from "@redis";
-import { CRUDService, TemperatureWithSensor } from "@types";
+import { CRUDService, NewTemperature, TemperatureWithSensor } from "@types";
 class TemperatureServices
   implements CRUDService<TemperatureDTO, TemperatureWithSensor>
 {
   private prisma = PrismaClient;
   private redis = redis.getClient();
   private cacheKey = "temperature";
-  private createCacheKey(temperature: TemperatureWithSensor): string {
+  private createCacheKey(temperature: Temperature): string {
     return `${this.cacheKey}_${new Date(temperature.timestamp).getHours()}`;
   }
-  public async create(data: Temperature): Promise<TemperatureDTO> {
+  public async create(data: NewTemperature): Promise<TemperatureDTO> {
     const temperature = await this.prisma.temperature.create({
       data: {
         timestamp: data.timestamp,
@@ -60,6 +60,15 @@ class TemperatureServices
     return TemperatureDTO.from(temperature);
   }
 
+  public aggregateTemperatureFromTemperatures(
+    temperatures: TemperatureDTO[],
+  ): number {
+    return (
+      temperatures.reduce((sum, temp) => sum + temp.getTemperatureValue(), 0) /
+      temperatures.length
+    ); // Calculate average
+  }
+
   public async delete(id: number): Promise<void> {
     const temperature = await this.prisma.temperature.delete({
       where: { id },
@@ -93,5 +102,11 @@ class TemperatureServices
     await this.redis.expire(cacheKey, 7200); // 2 hour TTL
     return temperatures.map(TemperatureDTO.from);
   }
+  public async clearHourlyTemperaturesCache(): Promise<void> {
+    const cacheKey = `${this.cacheKey}_${new Date().getHours()}`;
+    await this.redis.del(cacheKey);
+  }
+
+  public async checkMalfunction(): Promise<void> {}
 }
 export const temperatureServices = new TemperatureServices();

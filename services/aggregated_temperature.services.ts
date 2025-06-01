@@ -10,7 +10,7 @@ class AggregatedTemperatureServices
   private redis = redis.getClient();
   private cacheKey = "aggregated_temperature _";
   public async create(
-    data: AggregatedTemperature,
+    data: Omit<AggregatedTemperature, "id">,
   ): Promise<AggregatedTemperatureDTO> {
     const aggregatedTemperature =
       await this.prisma.aggregatedTemperature.create({ data });
