@@ -1,0 +1,46 @@
+# Set the version of docker compose to use
+version: "1.0"
+volumes:
+  db:
+    driver: local
+  redis:
+    driver: local
+# The containers that compose the project
+services:
+  redis:
+    image: "redis:latest"
+    container_name: integration-test-redis
+    hostname: redis
+    restart: always
+    ports:
+      - "6370:6379"
+    command: ["redis-server", "--bind", "redis", "--port", "6370"]
+    environment:
+      - WAIT_HOSTS=redis:6370
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=30
+      - WAIT_HOST_CONNECT_TIMEOUT=30
+    volumes:
+      - redis:/data
+  db:
+    image: postgresql:latest
+    restart: always
+    hostname: postgres
+    container_name: integration-tests-prisma
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: prisma
+      POSTGRES_DB: tests
+  integration:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+      - db
+    environment:
+      DATABASE_URL: postgresql://prisma:prisma@postgres:5432/prod?schema=public
+      SERVER_PORT: 3000
+      REDIS_URL: redis://redis:6370
