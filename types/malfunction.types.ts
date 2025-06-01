@@ -1,6 +1,6 @@
-import { Sensor, Malfunction } from "@prisma_client";
+import type { Sensor, Malfunction } from "@prisma_client";
 
-export { Malfunction } from "@prisma_client";
+export type { Malfunction } from "@prisma_client";
 export interface MalfunctionWithSensor extends Malfunction {
   sensor?: Sensor;
 }

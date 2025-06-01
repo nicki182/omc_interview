@@ -1,11 +1,10 @@
 import { PrismaClient } from "../generated/prisma";
-export {
+export type {
   Temperature,
   Malfunction,
-  Face,
   Sensor,
   AggregatedTemperature,
-  Time,
-} from "../generated/prisma/client";
+} from "../generated/prisma";
+export { Time, Face } from "../generated/prisma";
 const prisma = new PrismaClient();
 export default prisma;
