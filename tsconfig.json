@@ -27,6 +27,8 @@
       "@error/*": ["./error/*"],
       "@mappers": ["./mappers/index.ts"],
       "@controllers": ["./controllers/index.ts"],
+      "@middlewares": ["./middlewares"],
+      "@schemas": ["./schemas"],
     }
   },
   "ts-node": {

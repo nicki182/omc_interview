@@ -1,9 +1,12 @@
 import { temperatureController, reportController  } from "@controllers";
+import { createValidationMiddleware } from "@middlewares";
+import { readingSchema } from "@schemas";
 import {  Reading, Face } from "@types";
 import  logger  from "@utils/logger";
 import express from "express";
+
 const router = express.Router();
-router.post("/add", async (req, res) => {
+router.post("/add",createValidationMiddleware(readingSchema) ,async (req, res) => {
   const { timestamp, face, temperature_value, sensor_id } = req.body;
   try {
     const newTemperature:Reading = {
