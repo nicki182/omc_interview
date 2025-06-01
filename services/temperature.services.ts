@@ -1,7 +1,12 @@
-import { TemperatureDTO } from "@dto/index";
-import PrismaClient, { Temperature } from "@prisma_client";
+import { TemperatureDTO } from "@dto";
+import PrismaClient from "@prisma_client";
 import redis from "@redis";
-import { CRUDService, NewTemperature, TemperatureWithSensor } from "@types";
+import {
+  CRUDService,
+  NewTemperature,
+  TemperatureWithSensor,
+  Temperature,
+} from "@types";
 class TemperatureServices
   implements CRUDService<TemperatureDTO, TemperatureWithSensor>
 {

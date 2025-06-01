@@ -18,7 +18,8 @@ class ServerError extends CustomError {
   public code: ErrorCodes;
   public label: string;
 
-  constructor(code?: ErrorCodes, message?: string) {
+  constructor(opts: { code?: ErrorCodes; message?: string }) {
+    const { code, message } = opts;
     if ((code && !Object.values(ErrorCodes).includes(code)) || message) {
       throw new CustomError("Invalid error code provided");
     }

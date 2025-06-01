@@ -1,5 +1,7 @@
 import { Sensor, Temperature, Malfunction } from "@prisma_client";
 
+export { Sensor } from "@prisma_client";
+export { Face } from "@prisma_client";
 export interface SensorWithTemperatures extends Sensor {
   temperatures: Temperature[];
 }

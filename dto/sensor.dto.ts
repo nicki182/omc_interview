@@ -1,5 +1,4 @@
-import { Face } from "@prisma_client";
-import { SensorWithTemperaturesAndMalfunctions } from "@types";
+import { SensorWithTemperaturesAndMalfunctions, Face } from "@types";
 export class SensorDTO {
   private id: number;
   private createdAt: Date;

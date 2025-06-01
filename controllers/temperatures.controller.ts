@@ -1,9 +1,8 @@
-import { TemperatureDTO } from "@dto/temperature.dto";
-import { Face } from "@prisma_client";
-import { temperatureServices, sensorServices } from "@services/index";
-import { Reading } from "@types";
+import { TemperatureDTO } from "@dto";
+import { temperatureServices, sensorServices } from "@services";
+import { Reading, Face } from "@types";
 import logger from "@utils/logger";
-export class TemperatureController {
+class TemperatureController {
   async addReading(temperature: Reading): Promise<TemperatureDTO> {
     const { face, sensor_id } = temperature;
 
@@ -20,13 +19,5 @@ export class TemperatureController {
 
     return createdTemperature;
   }
-  // async checkMalfunction(temperature:Reading): Promise<boolean> {
-  //     const malfunction = await temperatureServices.checkMalfunction();
-  //     if (malfunction) {
-  //         logger.warn("Temperature sensor malfunction detected.");
-  //         return true;
-  //     }
-  //     logger.info("No temperature sensor malfunctions detected.");
-  //     return false;
-  // }
 }
+export const temperatureController = new TemperatureController();

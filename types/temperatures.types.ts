@@ -1,5 +1,6 @@
 import { Face, Sensor, Temperature } from "@prisma_client";
 
+export { Temperature } from "@prisma_client";
 export interface TemperatureWithSensor extends Temperature {
   sensor?: Sensor;
 }

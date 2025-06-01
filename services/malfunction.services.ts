@@ -1,7 +1,12 @@
-import { MalfunctionDTO } from "@dto/index";
-import PrismaClient, { Malfunction } from "@prisma_client";
+import { MalfunctionDTO } from "@dto";
+import PrismaClient from "@prisma_client";
 import redis from "@redis";
-import { CRUDService, MalfunctionWithSensor } from "@types";
+import {
+  CRUDService,
+  MalfunctionWithSensor,
+  Malfunction,
+  NewMalfunction,
+} from "@types";
 import logger from "@utils/logger";
 class MalfunctionServices
   implements CRUDService<MalfunctionDTO, MalfunctionWithSensor>
@@ -9,7 +14,8 @@ class MalfunctionServices
   private prisma = PrismaClient;
   private redis = redis.getClient();
   private cacheKey = "malfunction _";
-  public async create(data: Malfunction): Promise<MalfunctionDTO> {
+  private deviation = 20; // Default deviation threshold
+  public async create(data: NewMalfunction): Promise<MalfunctionDTO> {
     const malfunction = await this.prisma.malfunction.create({
       data: {
         sensor_id: data.sensor_id,
@@ -78,6 +84,26 @@ class MalfunctionServices
     // Remove from cache
     await this.redis.del(`${this.cacheKey}${id}`);
     logger.info(`Malfunction with ID: ${id} deleted`);
+  }
+  public isDeviationExceeded(
+    temperatureAverageSensor: number,
+    temperatureAverageFace: number,
+  ): boolean {
+    const deviation = this.calculateDeviation(
+      temperatureAverageSensor,
+      temperatureAverageFace,
+    );
+    return deviation > this.deviation;
+  }
+  public calculateDeviation(
+    temperatureAverageSensor: number,
+    temperatureAverageFace: number,
+  ): number {
+    return (
+      (Math.abs(temperatureAverageFace - temperatureAverageSensor) /
+        temperatureAverageSensor) *
+      100
+    ); // Calculate percentage deviation
   }
 }
 export const malfunctionServices = new MalfunctionServices();

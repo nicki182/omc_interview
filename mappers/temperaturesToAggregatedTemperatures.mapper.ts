@@ -1,7 +1,7 @@
-import { TemperatureDTO, AggregatedTemperatureDTO } from "@dto/index";
+import { TemperatureDTO, AggregatedTemperatureDTO } from "@dto";
 import { CustomError } from "@error/index";
-import { Face, Time } from "@prisma_client";
-import { temperatureServices } from "@services/index";
+import { temperatureServices } from "@services";
+import { Face, Time } from "@types";
 /**
  * Maps a TemperatureDTO[] to AggregatedTemperatureDTO[]
  * @param temperature - The TemperatureDTO[] to map.

@@ -1,4 +1,4 @@
-import { SensorDTO } from "@dto/sensor.dto";
+import { SensorDTO } from "@dto";
 import { TemperatureWithSensor } from "@types";
 export class TemperatureDTO {
   private timestamp: number;

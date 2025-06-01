@@ -18,14 +18,15 @@
     "skipLibCheck": true,
     "paths": {
       "@utils/*": ["./utils/*"],
-      "@services/*": ["./services/*"],
+      "@services": ["./services/index.ts"],
       "@redis": ["./db/redis"],
       "@prisma_client": ["./db/prisma"],
       "@routes": ["./routes"],
       "@types": ["./types/index.ts"],
-      "@dto/*": ["./dto/*"],
+      "@dto": ["./dto/index.ts"],
       "@error/*": ["./error/*"],
-      "@mappers/*": ["./mappers/*"],
+      "@mappers": ["./mappers/index.ts"],
+      "@controllers": ["./controllers/index.ts"],
     }
   },
   "ts-node": {

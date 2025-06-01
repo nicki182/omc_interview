@@ -1,3 +1,4 @@
+import router from "@routes";
 import cors from "cors";
 import express from "express";
 import expressWinston from "express-winston";
@@ -5,6 +6,7 @@ import { transports } from "winston";
 const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
+app.use('api/v1/reading',router);
 app.use(
   expressWinston.logger({
     transports: [new transports.Console()],

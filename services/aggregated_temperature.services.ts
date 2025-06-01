@@ -1,7 +1,11 @@
-import { AggregatedTemperatureDTO } from "@dto/index";
-import PrismaClient, { AggregatedTemperature } from "@prisma_client";
+import { AggregatedTemperatureDTO } from "@dto";
+import PrismaClient from "@prisma_client";
 import redis from "@redis";
-import { CRUDService } from "@types";
+import {
+  CRUDService,
+  AggregatedTemperature,
+  NewAggregatedTemperature,
+} from "@types";
 import logger from "@utils/logger";
 class AggregatedTemperatureServices
   implements CRUDService<AggregatedTemperatureDTO, AggregatedTemperature>
@@ -10,7 +14,7 @@ class AggregatedTemperatureServices
   private redis = redis.getClient();
   private cacheKey = "aggregated_temperature _";
   public async create(
-    data: Omit<AggregatedTemperature, "id">,
+    data: NewAggregatedTemperature,
   ): Promise<AggregatedTemperatureDTO> {
     const aggregatedTemperature =
       await this.prisma.aggregatedTemperature.create({ data });
@@ -29,6 +33,22 @@ class AggregatedTemperatureServices
       await this.prisma.aggregatedTemperature.findMany({});
     logger.info(
       `Retrieved ${aggregatedTemperatures.length} aggregatedTemperatures from the database`,
+    );
+    return aggregatedTemperatures.map(AggregatedTemperatureDTO.from);
+  }
+  public async getWeeklyAggregatedTemperatures(): Promise<
+    AggregatedTemperatureDTO[]
+  > {
+    const aggregatedTemperatures =
+      await this.prisma.aggregatedTemperature.findMany({
+        where: {
+          timestamp: {
+            gte: Date.now() - 7 * 24 * 60 * 60 * 1000, // Last 7 days
+          },
+        },
+      });
+    logger.info(
+      `Retrieved ${aggregatedTemperatures.length} weekly aggregatedTemperatures`,
     );
     return aggregatedTemperatures.map(AggregatedTemperatureDTO.from);
   }

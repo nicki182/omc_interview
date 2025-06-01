@@ -1,4 +1,4 @@
-import { AggregatedTemperature, Face, Time } from "@prisma_client";
+import { AggregatedTemperature, Face, Time } from "@types";
 
 export class AggregatedTemperatureDTO {
   private id: number;
