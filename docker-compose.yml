@@ -1,0 +1,66 @@
+# Set the version of docker compose to use
+version: "3.8"
+
+volumes:
+  db:
+    driver: local
+  redis:
+    driver: local
+
+# The containers that compose the project
+services:
+  redis:
+    image: "redis:6.2"
+    restart: always
+    volumes:
+      - redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    command: ["redis-server", "--net", "0.0.0.0", "--port", "6379"]
+    ports:
+    - "6379:6379"
+
+  db:
+    image: postgres:latest
+    restart: always
+    hostname: postgres
+    container_name: omc-prisma
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: prisma
+      POSTGRES_DB: omc
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U prisma"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  migration_data:
+    build:
+      context: .
+      dockerfile: Dockerfile.Postgres
+    depends_on:
+      db:
+        condition: service_healthy
+
+  integration:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      REDIS_URL: redis://redis_omc:6379
+    restart: unless-stopped

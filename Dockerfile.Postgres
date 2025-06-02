@@ -1,2 +1,13 @@
-FROM node:23-slim
+FROM node:20-slim
+# Create app directory
+# Create Directory for the Container
+WORKDIR /usr/src/app
+# Only copy the package.json file to work directory
+COPY package.json .
+COPY ./prisma .
+# Install corepack and pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+# Install all Packages
+RUN pnpm install
+
 CMD ["npx", "prisma", "migrate", "deploy"]
