@@ -19,4 +19,5 @@ RUN pnpm install
 # Copy all other source code to work directory
 COPY . /usr/src/app
 
-RUN pnpm bs:production
+RUN pnpm build
+CMD ["pnpm", "start"]

@@ -19,7 +19,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-    command: ["redis-server", "--net", "0.0.0.0", "--port", "6379"]
+    command: ["redis-server", "--bind", "0.0.0.0", "--port", "6379"]
     ports:
     - "6379:6379"
 
@@ -46,6 +46,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.Postgres
+    environment:
+      DATABASE_URL: postgresql://prisma:prisma@db:5432/omc?schema=public
+
     depends_on:
       db:
         condition: service_healthy
@@ -62,5 +65,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      REDIS_URL: redis://redis_omc:6379
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL : postgresql://prisma:prisma@db:5432/omc?schema=public
+
     restart: unless-stopped
