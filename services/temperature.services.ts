@@ -17,7 +17,7 @@ class TemperatureServices
     return this.redis.getClient();
   }
   private createCacheKey(temperature: Temperature): string {
-    return `${this.cacheKey}_${new Date(temperature.timestamp).getHours()}`;
+    return `${this.cacheKey}_${new Date(Number(temperature.timestamp) * 1000).getHours()}`;
   }
   public async create(data: NewTemperature): Promise<TemperatureDTO> {
     const temperature = await this.prisma.temperature.create({
@@ -31,7 +31,13 @@ class TemperatureServices
       },
     });
     const cacheKey = this.createCacheKey(temperature);
-    await this.getRedisClient().LPUSH(cacheKey, JSON.stringify(temperature));
+    await this.getRedisClient().LPUSH(
+      cacheKey,
+      JSON.stringify({
+        ...temperature,
+        timestamp: temperature.timestamp.toString(),
+      }),
+    ); // Convert timestamp to string for JSON compatibility
     await this.getRedisClient().expire(cacheKey, 7200); // 2 hour TTL
     return TemperatureDTO.from(temperature);
   }
@@ -82,9 +88,7 @@ class TemperatureServices
       where: { id },
     });
     // Remove from cache
-    await this.getRedisClient().del(
-      `${this.cacheKey}_${new Date(temperature.timestamp).getHours()}`,
-    );
+    await this.getRedisClient().del(this.createCacheKey(temperature));
   }
   public async getTemperaturesOfHour(): Promise<TemperatureDTO[]> {
     const cacheKey = `${this.cacheKey}_${new Date().getHours()}`;
@@ -107,9 +111,13 @@ class TemperatureServices
       },
       include: { sensor: true },
     });
-    await this.getRedisClient().LPUSH(
-      cacheKey,
-      temperatures.map((temp) => JSON.stringify(temp)),
+    await Promise.all(
+      temperatures.map((temp) =>
+        this.getRedisClient().LPUSH(
+          cacheKey,
+          JSON.stringify({ ...temp, timestamp: temp.timestamp.toString() }), // Convert timestamp to string for JSON compatibility),
+        ),
+      ),
     );
     await this.getRedisClient().expire(cacheKey, 7200); // 2 hour TTL
     return temperatures.map(TemperatureDTO.from);

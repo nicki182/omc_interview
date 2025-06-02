@@ -4,6 +4,7 @@ import cors from "cors";
 import express from "express";
 import expressWinston from "express-winston";
 import { transports } from "winston";
+import "@cron";
 const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());

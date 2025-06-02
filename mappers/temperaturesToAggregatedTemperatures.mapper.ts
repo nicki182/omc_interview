@@ -47,12 +47,13 @@ export const temperaturesToAggregatedTemperaturesMapper = (
       aggregatedTemperature.setFace(face);
       aggregatedTemperature.setTime(time);
       aggregatedTemperature.setTemperatureValue(aggregatedTemperatureValue);
+      aggregatedTemperaturesByFace[face] = aggregatedTemperature;
     }
   });
-  return Object.values(aggregatedTemperaturesByFace).map(
-    (aggregatedTemperature) => {
-      aggregatedTemperature.setTimestamp(Date.now()); // Set current timestamp
+  return Object.values(aggregatedTemperaturesByFace)
+    .filter((aggregatedTemperature) => aggregatedTemperature.getFace())
+    .map((aggregatedTemperature) => {
+      aggregatedTemperature.setTimestamp(Date.now() as unknown as bigint); // Set current timestamp
       return aggregatedTemperature;
-    },
-  );
+    });
 };

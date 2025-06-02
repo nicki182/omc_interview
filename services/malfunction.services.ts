@@ -30,7 +30,10 @@ class MalfunctionServices
     // Cache the created malfunction
     await this.getRedisClient().set(
       `${this.cacheKey}${malfunction.id}`,
-      JSON.stringify(malfunction),
+      JSON.stringify({
+        ...malfunction,
+        timestamp: malfunction.timestamp.toString(),
+      }), // Convert timestamp to string for JSON compatibility
     );
     logger.info(`Malfunction created with ID: ${malfunction.id}`);
     return MalfunctionDTO.from(malfunction);
@@ -56,7 +59,10 @@ class MalfunctionServices
     if (malfunction) {
       await this.getRedisClient().set(
         `${this.cacheKey}${id}`,
-        JSON.stringify(malfunction),
+        JSON.stringify({
+          ...malfunction,
+          timestamp: malfunction.timestamp.toString(),
+        }), // Convert timestamp to string for JSON compatibility
       );
       logger.info(`Malfunction with ID: ${id} retrieved from the database`);
       return MalfunctionDTO.from(malfunction);
@@ -79,7 +85,10 @@ class MalfunctionServices
     // Update the cache
     await this.getRedisClient().set(
       `${this.cacheKey}${id}`,
-      JSON.stringify(malfunction),
+      JSON.stringify({
+        ...malfunction,
+        timestamp: malfunction.timestamp.toString(),
+      }), // Convert timestamp to string for JSON compatibility
     );
     logger.info(`Malfunction with ID: ${id} updated`);
     return MalfunctionDTO.from(malfunction);

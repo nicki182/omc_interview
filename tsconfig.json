@@ -29,6 +29,7 @@
       "@controllers": ["./controllers/index.ts"],
       "@middlewares": ["./middlewares"],
       "@schemas": ["./schemas"],
+      "@cron": ["./cron/jobs.ts"],   
     }
   },
   "ts-node": {

@@ -1,4 +1,3 @@
-import { CustomError } from "@error/index";
 import {
   temperaturesToAggregatedTemperaturesMapper,
   aggregatedTemperaturesBySensorMapper,
@@ -9,7 +8,7 @@ import {
   temperatureServices,
 } from "@services";
 import { NewMalfunction, Time } from "@types";
-import logger from "@utils/logger";
+import logger, { malfunctionLogger } from "@utils/logger";
 import cron from "node-cron";
 const AGGREGATE_TEMPERATURE_JOB = "0 * * * *"; // Every hour
 const CHECK_MALFUNCTIONS_JOB = "0 * * * *"; // Every hour
@@ -39,7 +38,7 @@ cron.schedule(AGGREGATE_TEMPERATURE_JOB, async () => {
       );
     }
   } catch (error) {
-    throw new CustomError("Error in aggregate temperature job: " + error);
+    logger.error("Error in aggregate temperature job: " + error);
   }
 });
 cron.schedule(CHECK_MALFUNCTIONS_JOB, async () => {
@@ -82,7 +81,7 @@ cron.schedule(CHECK_MALFUNCTIONS_JOB, async () => {
     if (malfunctions.length > 0) {
       await Promise.all(
         malfunctions.map((malfunction) => {
-          logger.warn(
+          malfunctionLogger.warn(
             `Malfunction detected: Sensor ID ${malfunction.sensor_id}, ` +
               `Temperature Value ${malfunction.temperature_value}, ` +
               `Deviation ${malfunction.deviation}%`,
@@ -95,6 +94,16 @@ cron.schedule(CHECK_MALFUNCTIONS_JOB, async () => {
     }
     logger.info("No malfunctions detected for the hour.");
   } catch (error) {
-    throw new CustomError("Error in check malfunction job: " + error);
+    logger.error("Error in check malfunction job: " + error);
   }
+});
+// Graceful shutdown handling
+process.on("SIGINT", () => {
+  logger.info("Shutting down cron jobs...");
+  process.exit(0);
+});
+
+process.on("SIGTERM", () => {
+  logger.info("Received SIGTERM, shutting down gracefully");
+  process.exit(0);
 });

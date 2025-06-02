@@ -24,7 +24,10 @@ class AggregatedTemperatureServices
     // Cache the created aggregatedTemperature
     await this.getRedisClient().set(
       `${this.cacheKey}${aggregatedTemperature.id}`,
-      JSON.stringify(aggregatedTemperature),
+      JSON.stringify({
+        ...aggregatedTemperature,
+        timestamp: aggregatedTemperature.timestamp.toString(),
+      }), // Convert timestamp to string for JSON compatibility
     );
     logger.info(
       `Aggregated Temperature created with ID: ${aggregatedTemperature.id}`,
@@ -71,7 +74,10 @@ class AggregatedTemperatureServices
     if (aggregatedTemperature) {
       await this.getRedisClient().set(
         `${this.cacheKey}${id}`,
-        JSON.stringify(aggregatedTemperature),
+        JSON.stringify({
+          ...aggregatedTemperature,
+          timestamp: aggregatedTemperature.timestamp.toString(),
+        }), // Convert timestamp to string for JSON compatibility
       );
       logger.info(
         `AggregatedTemperature with ID: ${id} retrieved from the database`,
@@ -92,7 +98,10 @@ class AggregatedTemperatureServices
     // Update the cache
     await this.getRedisClient().set(
       `${this.cacheKey}${id}`,
-      JSON.stringify(aggregatedTemperature),
+      JSON.stringify({
+        ...aggregatedTemperature,
+        timestamp: aggregatedTemperature.timestamp.toString(),
+      }), // Convert timestamp to string for JSON compatibility
     );
     logger.info(`AggregatedTemperature with ID: ${id} updated`);
     return AggregatedTemperatureDTO.from(aggregatedTemperature);

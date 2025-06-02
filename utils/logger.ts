@@ -18,12 +18,25 @@ const logger = createLogger({
       level: "error",
     }),
     new DailyRotateFile({
-      filename: "./log/%DATE%-malfunction-logs.log",
+      filename: "./log/%DATE%-warn-logs.log",
       level: "warn",
     }),
     new DailyRotateFile({
       filename: "./log/%DATE%-info-logs.log",
       level: "info",
+    }),
+  ],
+});
+
+export const malfunctionLogger = createLogger({
+  format: combine(timestamp(), loggerFormat),
+  transports: [
+    new transports.Console({
+      format: combine(colorize(), timestamp(), loggerFormat),
+    }),
+    new DailyRotateFile({
+      filename: "./log/%DATE%-malfunction-logs.log",
+      level: "warn",
     }),
   ],
 });
