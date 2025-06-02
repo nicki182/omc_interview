@@ -2,6 +2,10 @@ import type { Sensor, Temperature } from "@prisma_client";
 
 import { Face } from "@prisma_client";
 export type { Temperature } from "@prisma_client";
+
+export type TemperaturePayload = Omit<Temperature, "timestamp"> & {
+  timestamp: string; // Use string for easier JSON serialization
+};
 export interface TemperatureWithSensor extends Temperature {
   sensor?: Sensor;
 }

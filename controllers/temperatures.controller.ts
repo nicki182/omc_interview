@@ -1,9 +1,9 @@
 import { TemperatureDTO } from "@dto";
 import { temperatureServices, sensorServices } from "@services";
-import { Reading, Face } from "@types";
+import { Reading, Face, TemperaturePayload } from "@types";
 import logger from "@utils/logger";
 class TemperatureController {
-  async addReading(temperature: Reading): Promise<TemperatureDTO> {
+  async addReading(temperature: Reading): Promise<TemperaturePayload> {
     const { face, sensor_id } = temperature;
     logger.info("Received temperature reading:", temperature.temperature_value);
 
@@ -15,9 +15,13 @@ class TemperatureController {
       });
       temperature.sensor_id = newSensor.getId();
     }
-    const createdTemperature = await temperatureServices.create(temperature);
-
-    return createdTemperature;
+    const createdTemperature: TemperatureDTO =
+      await temperatureServices.create(temperature);
+    const temperatureObject = {
+      ...createdTemperature,
+      timestamp: createdTemperature.getTimestamp().toString(), // Convert bigint to string for JSON serialization
+    } as TemperaturePayload;
+    return temperatureObject;
   }
 }
 export const temperatureController = new TemperatureController();

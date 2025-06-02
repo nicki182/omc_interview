@@ -14,7 +14,7 @@ class ReportsServices {
     });
   }
   async getMalfunctionsReport(): Promise<ReportDTO> {
-    const malfunctions = malfunctionServices.list();
+    const malfunctions = await malfunctionServices.list();
     return ReportDTO.from({
       data: malfunctions,
       description: "Malfunctions Report",

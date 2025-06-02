@@ -16,11 +16,7 @@ router.post("/add",createValidationMiddleware(readingSchema) ,async (req, res) =
       sensor_id
     };
     const createdTemperature = await temperatureController.addReading(newTemperature);
-    const temperature = {
-      ...createdTemperature,
-      timestamp: createdTemperature.getTimestamp().toString(), // Convert bigint to string for JSON serialization
-    }
-    res.status(201).json({ message: "Temperature reading added successfully", data: temperature });
+    res.status(201).json({ message: "Temperature reading added successfully", data: createdTemperature });                          
   } catch (error) {
     logger.error("Error adding temperature reading:", error);
     res.status(500).json({ message: "Error adding temperature reading", error: error.message });
