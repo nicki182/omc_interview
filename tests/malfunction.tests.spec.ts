@@ -1,5 +1,4 @@
-import { Sensor, Face } from "../generated/prisma";
-import { sensorServices } from "../services";
+import { malfunctionServices } from "../services";
 import { prismaMock } from "./singleton";
 jest.mock("@redis", () => ({
   __esModule: true,
@@ -13,56 +12,95 @@ jest.mock("@redis", () => ({
     })),
   },
 }));
-test("should create new sensor ", async () => {
-  const sensor = {
+test("should create new malfunction ", async () => {
+  const malfunction = {
     id: 1,
-    face: Face.NORTH,
-    createdAt: new Date(),
-    malfunctions: undefined, // Assuming malfunctions is optional
-    temperatures: undefined, // Assuming aggregatedTemperatures is optional
+    sensor_id: 1,
+    deviation: 5,
+    timestamp: BigInt(Date.now()),
+    average_temperature_value: 25,
+    sensor: {
+      id: 1,
+      face: "NORTH", // Assuming Face is a string enum
+      createdAt: new Date(),
+      malfunctions: undefined, // Assuming malfunctions is optional
+      temperatures: undefined, // Assuming aggregatedTemperatures is optional
+    },
   };
-  prismaMock.sensor.create.mockResolvedValue(sensor);
-  const result = await sensorServices.create(sensor);
-  await expect({ ...result }).toEqual(sensor);
+  prismaMock.malfunction.create.mockResolvedValue(malfunction);
+  const result = await malfunctionServices.create(malfunction);
+  // Convert BigInt to Number for comparison
+  const expected = {
+    ...malfunction,
+    timestamp: Number(malfunction.timestamp),
+  };
+
+  const actual = {
+    ...result,
+    timestamp: Number(result.getTimestamp()),
+  };
+
+  expect(actual).toEqual(expected);
 });
-test("should list all sensors", async () => {
-  const sensors: Sensor[] = [
+test("should list all malfunctions", async () => {
+  const malfunctions = [
     {
       id: 1,
-      face: Face.NORTH,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      sensor_id: 1,
+      deviation: 5,
+      timestamp: BigInt(Date.now()),
+      average_temperature_value: 25,
+      sensor: {
+        id: 1,
+        face: "NORTH", // Assuming Face is a string enum
+        createdAt: new Date(),
+      },
     },
     {
       id: 2,
-      face: Face.SOUTH,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      sensor_id: 2,
+      deviation: 10,
+      timestamp: BigInt(Date.now()),
+      average_temperature_value: 30,
+      sensor: {
+        id: 2,
+        face: "SOUTH", // Assuming Face is a string enum
+        createdAt: new Date(),
+      },
     },
   ];
-  prismaMock.sensor.findMany.mockResolvedValue(sensors);
-  const result = await sensorServices.list();
+
+  prismaMock.malfunction.findMany.mockResolvedValue(malfunctions);
+  const result = await malfunctionServices.list();
 
   expect(result).toHaveLength(2);
   expect(result[0].getId()).toEqual(1);
   expect(result[1].getId()).toEqual(2);
 });
-test("should read an sensor by id", async () => {
-  const sensor: Sensor = {
+test("should read an malfunctions by id", async () => {
+  const malfunction = {
     id: 1,
-    face: Face.NORTH,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    sensor_id: 1,
+    deviation: 5,
+    timestamp: BigInt(Date.now()),
+    average_temperature_value: 25,
+    sensor: {
+      id: 1,
+      face: "NORTH", // Assuming Face is a string enum
+      createdAt: new Date(),
+      malfunctions: undefined, // Assuming malfunctions is optional
+      temperatures: undefined, // Assuming aggregatedTemperatures is optional
+    },
   };
-  prismaMock.sensor.findUnique.mockResolvedValue(sensor);
-  const result = await sensorServices.read(1);
+  prismaMock.malfunction.findUnique.mockResolvedValue(malfunction);
+  const result = await malfunctionServices.read(1);
 
   expect(result).toBeDefined();
   expect(result?.getId()).toEqual(1);
 });
-test("should return null for non-existing sensor", async () => {
-  prismaMock.sensor.findUnique.mockResolvedValue(null);
-  const result = await sensorServices.read(999);
+test("should return null for non-existing malfunction", async () => {
+  prismaMock.malfunction.findUnique.mockResolvedValue(null);
+  const result = await malfunctionServices.read(999);
 
   expect(result).toBeNull();
 });
