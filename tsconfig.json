@@ -3,6 +3,7 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "checkJs": true,
+    "types": ["jest", "node"],
     "noEmit": false,
     "declarationMap": true,
     "strictNullChecks": true,

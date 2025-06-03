@@ -4,7 +4,7 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "test": "jest",
+    "test": "jest --no-coverage",
     "prepare": "husky",
     "lint:fix": "pnpm lint --fix",
     "lint": "eslint . --ext .ts",
@@ -35,7 +35,6 @@
     "node-cron": "^4.0.7",
     "redis": "^5.1.1",
     "rimraf": "^6.0.1",
-    "typescript": "^5.8.3",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0",
     "zod": "^3.25.46"
@@ -44,6 +43,7 @@
     "@eslint/js": "^9.27.0",
     "@types/cors": "^2.8.18",
     "@types/express": "^5.0.2",
+    "@types/jest": "^29.5.14",
     "eslint": "^9.27.0",
     "globals": "^16.2.0",
     "husky": "^9.1.7",
@@ -53,9 +53,11 @@
     "nodemon": "^3.1.10",
     "prettier": "^3.5.3",
     "prisma": "^6.8.2",
+    "ts-jest": "^29.3.4",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
     "typescript-eslint": "^8.33.0"
   }
 }

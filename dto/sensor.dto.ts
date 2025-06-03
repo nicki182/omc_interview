@@ -23,6 +23,17 @@ export class SensorDTO {
   public setFace(face: Face): void {
     this.face = face;
   }
+  public setTemperatures(
+    temperatures: SensorWithTemperaturesAndMalfunctions["temperatures"],
+  ): void {
+    this.temperatures = temperatures;
+  }
+  public setMalfunctions(
+    malfunctions: SensorWithTemperaturesAndMalfunctions["malfunctions"],
+  ): void {
+    this.malfunctions = malfunctions;
+  }
+
   public getTemperatures(): SensorWithTemperaturesAndMalfunctions["temperatures"] {
     return this.temperatures;
   }
@@ -35,8 +46,6 @@ export class SensorDTO {
     dto.id = sensor.id;
     dto.createdAt = sensor.createdAt || new Date(); // Default to current date if not provided
     dto.face = sensor.face;
-    dto.temperatures = sensor.temperatures || [];
-    dto.malfunctions = sensor.malfunctions || [];
     return dto;
   }
 }
