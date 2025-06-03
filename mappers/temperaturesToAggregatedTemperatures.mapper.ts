@@ -46,7 +46,9 @@ export const temperaturesToAggregatedTemperaturesMapper = (
       const aggregatedTemperature = aggregatedTemperaturesByFace[face];
       aggregatedTemperature.setFace(face);
       aggregatedTemperature.setTime(time);
-      aggregatedTemperature.setTemperatureValue(aggregatedTemperatureValue);
+      aggregatedTemperature.setAverageTemperatureValue(
+        aggregatedTemperatureValue,
+      );
       aggregatedTemperaturesByFace[face] = aggregatedTemperature;
     }
   });

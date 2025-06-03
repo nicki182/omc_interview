@@ -27,7 +27,8 @@ cron.schedule(AGGREGATE_TEMPERATURE_JOB, async () => {
           return aggregatedTemperatureServices.create({
             face: aggregatedTemperature.getFace(),
             time: aggregatedTemperature.getTime(),
-            temperature_value: aggregatedTemperature.getTemperatureValue(),
+            average_temperature_value:
+              aggregatedTemperature.getAverageTemperatureValue(),
             timestamp: aggregatedTemperature.getTimestamp(),
           });
         }),
@@ -41,6 +42,7 @@ cron.schedule(AGGREGATE_TEMPERATURE_JOB, async () => {
     logger.error("Error in aggregate temperature job: " + error);
   }
 });
+// This cron job runs every hour to check for malfunctions
 cron.schedule(CHECK_MALFUNCTIONS_JOB, async () => {
   try {
     logger.info("Running check malfunction job");
@@ -49,30 +51,33 @@ cron.schedule(CHECK_MALFUNCTIONS_JOB, async () => {
       logger.info("No temperature readings found for the hour.");
       return;
     }
-    // Check for malfunctions based on the aggregated temperatures
+    // Map based on the aggregated temperatures
     const aggregatedTemperatures = temperaturesToAggregatedTemperaturesMapper(
       readings,
       Time.HOUR,
     );
+    // Map based on the aggregated temperatures by sensor
     const aggregatedTemperaturesBySensor =
       aggregatedTemperaturesBySensorMapper(readings);
     const malfunctions: NewMalfunction[] = [];
     aggregatedTemperaturesBySensor.forEach((aggregatedTemperature) => {
       aggregatedTemperatures.forEach((temp) => {
+        // Check if the aggregated temperature exceeds the deviation threshold
         if (
           malfunctionServices.isDeviationExceeded(
             aggregatedTemperature.aggregatedTemperature,
-            temp.getTemperatureValue(),
+            temp.getAverageTemperatureValue(),
           )
         ) {
           const deviationPercentage = malfunctionServices.calculateDeviation(
             aggregatedTemperature.aggregatedTemperature,
-            temp.getTemperatureValue(),
+            temp.getAverageTemperatureValue(),
           );
           malfunctions.push({
             sensor_id: aggregatedTemperature.sensor.getId(),
             timestamp: temp.getTimestamp(),
-            temperature_value: aggregatedTemperature.aggregatedTemperature,
+            average_temperature_value:
+              aggregatedTemperature.aggregatedTemperature,
             deviation: deviationPercentage,
           });
         }
@@ -83,7 +88,7 @@ cron.schedule(CHECK_MALFUNCTIONS_JOB, async () => {
         malfunctions.map((malfunction) => {
           malfunctionLogger.warn(
             `Malfunction detected: Sensor ID ${malfunction.sensor_id}, ` +
-              `Temperature Value ${malfunction.temperature_value}, ` +
+              `Temperature Value ${malfunction.average_temperature_value}, ` +
               `Deviation ${malfunction.deviation}%`,
           );
           malfunctionServices.create(malfunction);

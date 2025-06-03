@@ -7,6 +7,9 @@ import {
   NewAggregatedTemperature,
 } from "@types";
 import logger from "@utils/logger";
+/**
+ * Service for managing aggregated temperature data.
+ */
 class AggregatedTemperatureServices
   implements CRUDService<AggregatedTemperatureDTO, AggregatedTemperature>
 {

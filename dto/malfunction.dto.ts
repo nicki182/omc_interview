@@ -5,7 +5,7 @@ export class MalfunctionDTO {
   private id: number;
   private sensor_id: number;
   private timestamp: bigint;
-  private temperature_value: number;
+  private average_temperature_value: number;
   private deviation: number;
   private sensor: SensorDTO;
 
@@ -21,8 +21,8 @@ export class MalfunctionDTO {
     return this.timestamp;
   }
 
-  public getTemperature(): number {
-    return this.temperature_value;
+  public getAverageTemperature(): number {
+    return this.average_temperature_value;
   }
   public getDeviation(): number {
     return this.deviation;
@@ -37,7 +37,7 @@ export class MalfunctionDTO {
     dto.id = malfunction.id;
     dto.sensor_id = malfunction.sensor_id || malfunction.sensor?.id || 0; // Ensure sensor_id is defined
     dto.timestamp = (malfunction.timestamp || Date.now()) as bigint; // Default to current timestamp if not provided
-    dto.temperature_value = malfunction.temperature_value;
+    dto.average_temperature_value = malfunction.average_temperature_value;
     dto.deviation = malfunction.deviation;
     dto.sensor = malfunction.sensor
       ? SensorDTO.from(malfunction.sensor)

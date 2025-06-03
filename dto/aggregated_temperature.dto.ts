@@ -4,7 +4,7 @@ export class AggregatedTemperatureDTO {
   private id: number;
   private face: Face;
   private time: Time;
-  private temperature_value: number;
+  private average_temperature_value: number;
   private timestamp: bigint;
 
   public getId(): number {
@@ -16,8 +16,8 @@ export class AggregatedTemperatureDTO {
   public getTime(): Time {
     return this.time;
   }
-  public getTemperatureValue(): number {
-    return this.temperature_value;
+  public getAverageTemperatureValue(): number {
+    return this.average_temperature_value;
   }
   public getTimestamp(): bigint {
     return this.timestamp;
@@ -31,8 +31,8 @@ export class AggregatedTemperatureDTO {
   public setTime(time: Time): void {
     this.time = time;
   }
-  public setTemperatureValue(value: number): void {
-    this.temperature_value = value;
+  public setAverageTemperatureValue(value: number): void {
+    this.average_temperature_value = value;
   }
   public setTimestamp(timestamp: bigint): void {
     this.timestamp = timestamp;
@@ -45,7 +45,8 @@ export class AggregatedTemperatureDTO {
     dto.id = aggregatedTemperature.id;
     dto.face = aggregatedTemperature.face || ({} as Face); // Ensure face is defined
     dto.time = aggregatedTemperature.time || ({} as Time); // Ensure time is defined
-    dto.temperature_value = aggregatedTemperature.temperature_value;
+    dto.average_temperature_value =
+      aggregatedTemperature.average_temperature_value;
     dto.timestamp = (aggregatedTemperature.timestamp || Date.now()) as bigint; // Default to current timestamp if not provided
     return dto;
   }

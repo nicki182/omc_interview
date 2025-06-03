@@ -2,6 +2,11 @@ import { AggregatedTemperatureDTO, MalfunctionDTO } from "@dto";
 import ServerError from "@error/server.error";
 import { reportsServices } from "@services";
 class ReportController {
+  /**
+   * Generates a weekly report of aggregated temperatures.
+   * @returns {Promise<AggregatedTemperature[]>} - A promise that resolves to an array of aggregated temperatures.
+   * * @throws {ServerError} - If there is an error generating the report.
+   * */
   async getWeeklyReportAggregatedValues() {
     try {
       const report = await reportsServices.getWeeklyReport();
@@ -21,7 +26,11 @@ class ReportController {
       });
     }
   }
-
+  /**
+   * Retrieves a report of malfunctions.
+   * @returns {Promise<Malfunction[]>} - A promise that resolves to an array of malfunctions.
+   * @throws {ServerError} - If there is an error retrieving the malfunctions.
+   */
   async getReportMalfunctions() {
     try {
       const report = await reportsServices.getMalfunctionsReport();

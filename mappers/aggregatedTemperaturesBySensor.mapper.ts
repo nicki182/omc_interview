@@ -1,5 +1,9 @@
 import { TemperatureDTO, SensorDTO } from "@dto";
-
+/**}
+ * Aggregates temperatures by sensor.
+ * @param {TemperatureDTO[]} temperatures - Array of temperature data transfer objects.
+ * @return {Array<{ sensor: SensorDTO; aggregatedTemperature: number }>} - Array of objects containing sensor and aggregated temperature.
+ */
 export const aggregatedTemperaturesBySensorMapper = (
   temperatures: TemperatureDTO[],
 ): { sensor: SensorDTO; aggregatedTemperature: number }[] => {

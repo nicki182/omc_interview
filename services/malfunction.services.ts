@@ -8,6 +8,9 @@ import {
   NewMalfunction,
 } from "@types";
 import logger from "@utils/logger";
+/**
+ * Service for managing malfunctions in the system.
+ */
 class MalfunctionServices
   implements CRUDService<MalfunctionDTO, MalfunctionWithSensor>
 {
@@ -23,7 +26,7 @@ class MalfunctionServices
       data: {
         sensor_id: data.sensor_id,
         timestamp: data.timestamp,
-        temperature_value: data.temperature_value,
+        average_temperature_value: data.average_temperature_value,
         deviation: data.deviation,
       },
     });
@@ -78,7 +81,7 @@ class MalfunctionServices
       data: {
         sensor_id: data.sensor_id,
         timestamp: data.timestamp,
-        temperature_value: data.temperature_value,
+        average_temperature_value: data.average_temperature_value,
         deviation: data.deviation,
       },
     });

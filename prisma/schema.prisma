@@ -28,7 +28,7 @@ model Malfunction {
   id        Int      @id @default(autoincrement())
   timestamp BigInt      
   sensor_id Int
-  temperature_value Float
+  average_temperature_value Float
   deviation Float
   sensor    Sensor @relation(fields: [sensor_id], references: [id])   
   @@map("malfunctions")
@@ -47,7 +47,7 @@ model AggregatedTemperature {
   id        Int      @id @default(autoincrement())
   face      Face
   timestamp BigInt 
-  temperature_value Float
+  average_temperature_value Float
   time      Time   @default(HOUR)        
   @@map("aggregated_temperatures")
 }

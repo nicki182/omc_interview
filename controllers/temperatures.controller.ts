@@ -3,6 +3,11 @@ import { temperatureServices, sensorServices } from "@services";
 import { Reading, Face, TemperaturePayload } from "@types";
 import logger from "@utils/logger";
 class TemperatureController {
+  /**
+   * Adds a new temperature reading.
+   * @param temperature - The temperature reading to add.
+   * @returns The created temperature object with its ID and timestamp.
+   */
   async addReading(temperature: Reading): Promise<TemperaturePayload> {
     const { face, sensor_id } = temperature;
     logger.info("Received temperature reading:", temperature.temperature_value);

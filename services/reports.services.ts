@@ -2,7 +2,10 @@ import { ReportDTO } from "@dto";
 
 import { aggregatedTemperatureServices } from "./aggregated_temperature.services";
 import { malfunctionServices } from "./malfunction.services";
-
+/*
+ * ReportsServices class provides methods to generate reports based on aggregated temperatures and malfunctions.
+ * It includes methods to get weekly aggregated temperatures and malfunctions report.
+ */
 class ReportsServices {
   async getWeeklyReport(): Promise<ReportDTO> {
     const aggregatedTemperaturesOfLastWeek =
