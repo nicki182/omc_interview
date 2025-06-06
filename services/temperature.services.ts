@@ -91,7 +91,7 @@ class TemperatureServices
     await this.getRedisClient().del(this.createCacheKey(temperature));
   }
   public async getTemperaturesOfHour(): Promise<TemperatureDTO[]> {
-    const cacheKey = `${this.cacheKey}_${new Date().getHours()}`;
+    const cacheKey = `${this.cacheKey}_${new Date().getHours() - 1}`;
     const cachedTemperatures = await this.getRedisClient().LRANGE(
       cacheKey,
       0,
@@ -105,8 +105,8 @@ class TemperatureServices
     const temperatures = await this.prisma.temperature.findMany({
       where: {
         timestamp: {
-          gte: new Date().getHours() * 3600 * 1000, // Start of the hour
-          lt: new Date().getHours() * 3600 * 1000 + 3600 * 1000, // End of the hour
+          gte: (new Date().getHours() - 1) * 3600 * 1000, // Start of the hour
+          lt: (new Date().getHours() - 1) * 3600 * 1000 + 3600 * 1000, // End of the hour
         },
       },
       include: { sensor: true },
@@ -123,7 +123,7 @@ class TemperatureServices
     return temperatures.map(TemperatureDTO.from);
   }
   public async clearHourlyTemperaturesCache(): Promise<void> {
-    const cacheKey = `${this.cacheKey}_${new Date().getHours()}`;
+    const cacheKey = `${this.cacheKey}_${new Date().getHours() - 1}`;
     await this.getRedisClient().del(cacheKey);
   }
 }
